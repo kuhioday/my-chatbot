@@ -208,7 +208,7 @@ function prepareResponse(response, sequence) {
 						textResponse(message.speech, sequence);
 				        break;
 				    case 1: // TODO card response
-				        cardResponse(message.title, message.subtitle, message.buttons, message.text, message.postback, sequence);
+				        cardResponse(message.title, message.subtitle, message.buttons, message.text, message.postback, message.imageUrl, sequence);
 				        break;
 				    case 2: // quick replies
 				    	quickRepliesResponse(message.title, message.replies, sequence);
@@ -217,7 +217,7 @@ function prepareResponse(response, sequence) {
 						imageResponse(message.imageUrl, sequence);
 				        break;
 				    case 3: // custom payload
-
+						console.log("custom payload tripped")
 				        break;
 				    default:
 				}
@@ -308,12 +308,22 @@ function imageResponse(imageUrl, sequence) {
  * @param buttons
  * @param text
  * @param postback
+ * @param imageUrl
  * @param sequence
  */
-function cardResponse(title, subtitle, buttons, text, postback, sequence) {
-	var html = "<div class=\"myc-card-title\">" + title + "</div>";
-	html += "<div class=\"myc-card-subtitle\">" + subtitle + "</div>";
-	// TODO
+function cardResponse(title, subtitle, buttons, text, postback, imageUrl, sequence) {
+	if (title === "") {
+		title = myc_script_vars.messages.internal_error;
+	}
+	//console.log(buttons[0].postback)
+	var date = new Date();
+	var innerHTML = "<div class=\"myc-conversation-bubble-container myc-conversation-bubble-container-response\"><div class=\"myc-conversation-bubble myc-conversation-response myc-is-active myc-image-response\"><a href=\"" + buttons[0].postback +  "\">"+"<img src=\"" + imageUrl + "\"/></div>";
+	innerHTML += "<div class=\"myc-conversation-bubble-container myc-conversation-bubble-container-response\"><div class=\"myc-conversation-bubble myc-conversation-response myc-is-active myc-text-response\">" + subtitle + "</div>";
+	if (myc_script_vars.show_time) {
+		innerHTML += "<div class=\"myc-datetime\">" + date.toLocaleTimeString() + "</div>";
+	}
+	innerHTML += "</div>";
+	jQuery("#myc-container-" + sequence + " .myc-conversation-area").append(innerHTML);
 }
 
 /**
@@ -388,3 +398,4 @@ function escapeTextInput(text) {
     return entityMap[s];
   });
 }
+
